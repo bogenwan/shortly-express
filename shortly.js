@@ -75,7 +75,23 @@ function(req, res) {
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+app.get('/login', function(req, res) {
+  console.log(req.body);
+  res.render('login');
+});
 
+app.post('/login', function(req, res) {
+  console.log(req.body.url);
+  res.render('index');
+});
+
+app.get('/signup', function(req, res) {
+  res.render('signup');
+});
+
+app.get('/layout', function(req, res) {
+  res.render('layout');
+});
 
 
 /************************************************************/
