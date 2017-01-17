@@ -38,12 +38,12 @@ function(req, res) {
   res.render('index');
 });
 
-app.get('/create', 
+app.get('/create', util.checkLoggedUser, 
 function(req, res) {
   res.render('index');
 });
 
-app.get('/links', 
+app.get('/links', util.checkLoggedUser,
 function(req, res) {
   Links.reset().fetch().then(function(links) {
     res.status(200).send(links.models);
