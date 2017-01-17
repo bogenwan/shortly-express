@@ -2,6 +2,8 @@ var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
+var session = require('express-session');
+var cookieParser = require('cookie-parser');
 
 
 var db = require('./app/config');
@@ -12,6 +14,14 @@ var Link = require('./app/models/link');
 var Click = require('./app/models/click');
 
 var app = express();
+
+app.use(cookieParser());
+app.use(session({
+  secret: 'somesecret',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {secure: true}
+}));
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
