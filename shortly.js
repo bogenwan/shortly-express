@@ -4,6 +4,7 @@ var partials = require('express-partials');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
+var bcrypt = require('bcrypt-nodejs');
 
 
 var db = require('./app/config');
@@ -50,7 +51,7 @@ function(req, res) {
   });
 });
 
-app.post('/links', 
+app.post('/links',
 function(req, res) {
   var uri = req.body.url;
 
@@ -86,21 +87,67 @@ function(req, res) {
 // Write your authentication routes here
 /************************************************************/
 app.get('/login', function(req, res) {
-  console.log(req.body);
+  // console.log(req.body);
   res.render('login');
 });
 
 app.post('/login', function(req, res) {
-  console.log(req.body.url);
-  res.render('index');
+  // console.log('this is req.body on the post  ', req.body.url);
+  var username = req.body.username;
+  var password = req.body.password;
+
+  new User({username: username})
+  .fetch()
+  .then(function (user) {
+    if (!user) {
+      res.redirect('/login');
+    } else {
+      bcrypt.compare(password, user.get('password'), function(match) {
+        if (match) {
+
+          util.createSession(req, res, user);
+        } else {
+          res.redirect('/login');
+        }
+      });
+    }
+  });
+      
 });
 
+
+
+
+  //res.render('index');
 app.get('/signup', function(req, res) {
   res.render('signup');
 });
 
-app.get('/layout', function(req, res) {
-  res.render('layout');
+app.post('/signup', function(req, res) {
+  var username = req.body.username;
+  var password = req.body.password;
+
+  new User({username: username})
+  .fetch()
+  .then(function (user) {
+    if (!user) {
+      bcrypt.hash(password, null, null, function(err, hash) {
+        Users.create({
+          username: username,
+          password: hash
+        }).then(function(user) {
+          util.createSession(req, res, user);
+        });
+      });
+    } else {
+      res.redirect('/signup');
+    }
+  });
+});
+
+
+app.get('/logout', function(req, res) {
+  res.render('logout');
 });
 
 

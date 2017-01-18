@@ -1,7 +1,7 @@
 var db = require('../config');
 var bcrypt = require('bcrypt-nodejs');
 var Promise = require('bluebird');
-var saltRounds = 10;
+
 
 
 var User = db.Model.extend({
@@ -25,13 +25,14 @@ var User = db.Model.extend({
   },
 
   hashPassword: function(inputPassword, callback) {
-    bcrypt.hash(inputPassword, saltRounds, null, function(err, res) {
+    var context = this;
+    bcrypt.hash(inputPassword, null, null, function(err, hash) {
       if (err) {
-        console.log(err);
+        // console.log(err);
       } else {
-        console.log('this is the response =>', res);
-        this.set({password: res});
-        callback(res);
+        console.log('this is the response =>', hash);
+        context.set('password', hash);
+        // callback(hash);
       }
     });
   },
